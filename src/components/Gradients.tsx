@@ -51,13 +51,25 @@ const GradientMaterial = shaderMaterial(
   // sin wave
   void main() {
     // Calculate the sine wave based on vUv.x and FREQUENCY
-    float wave = sin(vUv.x * FREQUENCY * 3.141592653589793238 + uTime) / 4.0 - 0.5;
+    float wave1 = sin(vUv.x * FREQUENCY * 3.141592653589793238 + uTime) / 4.0 - 0.5;
 
     // Determine the alpha value based on the wave shape
-    float alpha = smoothstep(-AMPLITUDE, AMPLITUDE, wave - vUv.y);
+    float alpha1 = smoothstep(-AMPLITUDE, AMPLITUDE, wave1 - vUv.y);
+
+    // Calculate the color based on the wave shape
+    vec3 color = mix(uColor0, uColor1, sign(alpha1));
+
+
+    // Calculate the sine wave based on vUv.x and FREQUENCY
+    float wave2 = sin(vUv.x * FREQUENCY * 3.141592653589793238 + uTime * 2.0) / 4.0 - 1.0;
+
+    // Determine the alpha value based on the wave shape
+    float alpha2 = smoothstep(-AMPLITUDE / 1.2, AMPLITUDE, wave1 - vUv.y);
+
+    color = mix(color, uColor2, sign(alpha2));
 
     // Set the color and alpha
-    gl_FragColor = vec4(uColor0, alpha);
+    gl_FragColor = vec4(color, 1.0);
   }
 `
 )
