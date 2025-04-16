@@ -1,16 +1,12 @@
 import "./App.css"
 
-import SkewedCanvas from "./components/SkewedCanvas"
-import Gradients from "./components/Gradients"
+import SkewedGradiantWithColorSelector from "./components/SkewedGradiantWithColorSelector"
 
 function App() {
   return (
     <div className="App">
       <h1>Skewed Canvas</h1>
-      
-      <SkewedCanvas>
-        <Gradients />
-      </SkewedCanvas>
+      <SkewedGradiantWithColorSelector />
     </div>
   )
 }
