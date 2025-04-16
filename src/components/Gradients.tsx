@@ -1,11 +1,12 @@
 import * as THREE from "three"
-import { extend, useThree } from "@react-three/fiber"
+import { extend, useFrame, useThree } from "@react-three/fiber"
 import { shaderMaterial } from "@react-three/drei"
 import { useMemo } from "react"
 
 const GradientMaterial = shaderMaterial(
   {
     uColor0: { value: new THREE.Color(0x000000) },
+    uTime: 0,
   },
   /* glsl */ `
   varying vec2 vUv;
@@ -19,23 +20,44 @@ const GradientMaterial = shaderMaterial(
   uniform vec3 uColor1;
   uniform vec3 uColor2;
 
+  uniform float uTime;
+
   varying vec2 vUv;
 
   const float FREQUENCY = 8.0;
+  const float SPEED_RATIO = 0.05;
+
+  const float A = 15.0;
+  const float L = 75.0;
+
+  const float AMPLITUDE = 1.0;
   
+  // // animated gradients
+  // void main() {
+  //   float repeatedX = mod((uTime * SPEED_RATIO + vUv.x) * FREQUENCY, 1.0); // Repeat vUv.y based on FREQUENCY
+  //   vec3 color;
+
+  //   if (repeatedX < 0.33) {
+  //     color = uColor0;
+  //   } else if (repeatedX < 0.66) {
+  //     color = uColor1;
+  //   } else {
+  //     color = uColor2;
+  //   }
+
+  //   gl_FragColor = vec4(color, 1.0);
+  // }
+
+  // sin wave
   void main() {
-    float repeatedX = mod(vUv.x * FREQUENCY, 1.0); // Repeat vUv.y based on FREQUENCY
-    vec3 color;
+    // Calculate the sine wave based on vUv.x and FREQUENCY
+    float wave = sin(vUv.x * FREQUENCY * 3.141592653589793238 + uTime) / 4.0 - 0.5;
 
-    if (repeatedX < 0.33) {
-      color = uColor0;
-    } else if (repeatedX < 0.66) {
-      color = uColor1;
-    } else {
-      color = uColor2;
-    }
+    // Determine the alpha value based on the wave shape
+    float alpha = smoothstep(-AMPLITUDE, AMPLITUDE, wave - vUv.y);
 
-    gl_FragColor = vec4(color, 1.0);
+    // Set the color and alpha
+    gl_FragColor = vec4(uColor0, alpha);
   }
 `
 )
@@ -63,6 +85,10 @@ function Gradients({
 
     return mat
   }, [aspect, color0, color1, color2])
+
+  useFrame((state) => {
+    material.uniforms.uTime.value = state.clock.getElapsedTime()
+  })
 
   return (
     <>
