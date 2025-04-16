@@ -1,4 +1,34 @@
 import * as THREE from "three"
+import { extend, useThree } from "@react-three/fiber"
+import { shaderMaterial } from "@react-three/drei"
+import { useMemo } from "react"
+
+const GradientMaterial = shaderMaterial(
+  {
+    uColor0: { value: new THREE.Color(0x000000) },
+  },
+  /* glsl */ `
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`,
+  /* glsl */ `
+  uniform vec3 uColor0;
+  uniform vec3 uColor1;
+  uniform vec3 uColor2;
+
+  varying vec2 vUv;
+  
+  void main() {
+    vec3 color = mix(uColor0, uColor2, vUv.x);
+    gl_FragColor = vec4(color, 1.0);
+  }
+`
+)
+
+extend({ GradientMaterial })
 
 function Gradients({
   color0,
@@ -9,19 +39,23 @@ function Gradients({
   color1: THREE.Color
   color2: THREE.Color
 }) {
+  const { size, viewport } = useThree()
+  const aspect = size.width / size.height
+
+  const material = useMemo(() => {
+    const mat = new GradientMaterial()
+
+    mat.uniforms.uColor0 = new THREE.Uniform(color0)
+    mat.uniforms.uColor1 = new THREE.Uniform(color1)
+    mat.uniforms.uColor2 = new THREE.Uniform(color2)
+
+    return mat
+  }, [aspect, color0, color1, color2])
+
   return (
     <>
-      <mesh position={[-1.5, 0, 0]}>
-        <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial color={color0} />
-      </mesh>
-      <mesh>
-        <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial color={color1} />
-      </mesh>
-      <mesh position={[1.5, 0, 0]}>
-        <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial color={color2} />
+      <mesh scale={[viewport.width, viewport.height, 1]} material={material}>
+        <planeGeometry args={[1, 1]} />
       </mesh>
     </>
   )
