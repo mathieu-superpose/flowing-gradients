@@ -20,9 +20,21 @@ const GradientMaterial = shaderMaterial(
   uniform vec3 uColor2;
 
   varying vec2 vUv;
+
+  const float FREQUENCY = 8.0;
   
   void main() {
-    vec3 color = mix(uColor0, uColor2, vUv.x);
+    float repeatedX = mod(vUv.x * FREQUENCY, 1.0); // Repeat vUv.y based on FREQUENCY
+    vec3 color;
+
+    if (repeatedX < 0.33) {
+      color = uColor0;
+    } else if (repeatedX < 0.66) {
+      color = uColor1;
+    } else {
+      color = uColor2;
+    }
+
     gl_FragColor = vec4(color, 1.0);
   }
 `
