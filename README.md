@@ -2,6 +2,8 @@
 
 WebGL gradient from Alex Harri [tutorial](https://alexharri.com/blog/webgl-gradients)
 
+## [TRY IT](https://mathieu-superpose.github.io/flowing-gradients/)
+
 ## Technology
 
 - Bindler: Vite
