@@ -6,12 +6,28 @@ const skewedStyle = {
   transform: "skewY(-6deg)",
   overflow: "hidden",
   background: "#2222aa",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+}
+
+const containerStyle = {
+  width: "100%",
+  height: "200%",
+  transform: "skewY(6deg)",
 }
 
 function SkewedCanvas({ children }: { children: React.ReactNode }) {
   return (
     <div style={skewedStyle}>
-      <Canvas>{children}</Canvas>
+      <div style={containerStyle}>
+        <Canvas>
+          <ambientLight intensity={0.5} />
+          <directionalLight position={[10, 10, 10]} />
+
+          {children}
+        </Canvas>
+      </div>
     </div>
   )
 }

@@ -4,7 +4,11 @@ import * as THREE from "three"
 import Gradients from "./Gradients"
 import SkewedCanvas from "./SkewedCanvas"
 
-const COLORS = ["#ff0000", "#ff00ff", "#ffff00"]
+const GRADIENTS = [
+  ["#39A0ED", "#36F1CD", "#13C4A3"],
+  ["#987D7C", "#A09CB0", "#A3B9C9"],
+  ["#F76C5E", "#F68E5F", "#F5DD90"],
+]
 
 const containerStyle: CSSProperties = {
   position: "relative",
@@ -34,28 +38,32 @@ const buttonStyle: CSSProperties = {
 }
 
 function SkewedGradiantWithColorSelector() {
-  const [colorIndex, setColorIndex] = useState(0)
+  const [gradientIndex, setGradientIndex] = useState(0)
 
-  const color = useMemo(() => {
-    return new THREE.Color(COLORS[colorIndex])
-  }, [colorIndex])
+  const colors = useMemo<[THREE.Color, THREE.Color, THREE.Color]>(() => {
+    return [
+      new THREE.Color(GRADIENTS[gradientIndex][0]),
+      new THREE.Color(GRADIENTS[gradientIndex][1]),
+      new THREE.Color(GRADIENTS[gradientIndex][2]),
+    ]
+  }, [gradientIndex])
 
   return (
     <div style={containerStyle}>
       <SkewedCanvas>
-        <Gradients color={color} />
+        <Gradients color0={colors[0]} color1={colors[1]} color2={colors[2]} />
       </SkewedCanvas>
 
       <ul style={listStyle}>
-        {COLORS.map((color, index) => (
+        {GRADIENTS.map((colors, index) => (
           <li key={index}>
             <button
               style={{
-                backgroundColor: `${color}`,
-                transform: `translateY(${(COLORS.length - index) * 30}%)`,
+                background: `linear-gradient(to right, ${colors[0]} 33%, ${colors[1]} 33% 66%, ${colors[2]} 66%`,
+                transform: `translateY(${(GRADIENTS.length - index) * 30}%)`,
                 ...buttonStyle,
               }}
-              onClick={() => setColorIndex(index)}
+              onClick={() => setGradientIndex(index)}
             />
           </li>
         ))}
